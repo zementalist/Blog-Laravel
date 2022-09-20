@@ -7,8 +7,10 @@
 
   <script src="{{asset('js/jquery.min.js')}}"></script>
   <script src="{{asset('js/bootstrap.min.js')}}"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.27.2/axios.min.js" integrity="sha512-odNmoc1XJy5x1TMVMdC7EMs3IVdItLPlCeL5vSUPN2llYKMJ2eByTTAIiiuqLg+GdNr9hF6z81p27DArRFKT7A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 </head>
 <body>
+
   <!--Main Navigation-->
   <header>
 
@@ -38,13 +40,15 @@
               </a>
             </li>
 
+            @auth
             <li class="nav-item">
-              <a class="nav-link waves-effect" href="/create.php">Create Post</a>
+              <a class="nav-link waves-effect" href="/posts/create">Create Post</a>
             </li>
 
             <li class="nav-item">
               <a class="nav-link waves-effect" href="/?posts_by_uid=">My Posts</a>
             </li>
+            @endauth
 
             <li class="nav-item">
               <form action="" method="get">
@@ -54,23 +58,32 @@
           </ul>
 
           <!-- Right -->
+          @guest
           <ul class="navbar-nav nav-flex-icons">
             <li class="nav-item">
-              <a href="/auth/login.php" class="nav-link waves-effect">Login</a>
+              <a href="/login" class="nav-link waves-effect">Login</a>
             </li>
             <li class="nav-item">
-              <a href="/auth/register.php" class="nav-link waves-effect">Register</a>
+              <a href="/register" class="nav-link waves-effect">Register</a>
             </li>
           </ul>
+          @endguest
 
+          @auth
           <ul class="navbar-nav nav-flex-icons">
             <li class="nav-item">
-              <a href="" class="nav-link waves-effect"></a>
+              <a href="" class="nav-link waves-effect">
+                Welcome {{auth()->user()->name}}
+              </a>
             </li>
             <li class="nav-item">
-              <a href="/logout.php" class="nav-link waves-effect">Logout</a>
+              <form action="/logout" method="post">
+                @csrf
+                <input type="submit" class="nav-link waves-effect bg-transparent border-0" style="cursor:pointer;" name="logout" value="logout">
+              </form>
             </li>
           </ul>
+          @endauth
 
         </div>
 
@@ -84,10 +97,13 @@
   <!--Main layout-->
   <main class="mt-5 pt-5">
     <div class="container">
+      <div class="alert alert-danger" id="message">
+
+      </div>
       <!-- Alert Message -->
-      @if(isset($message))
+      @if(session("message"))
         <div class="alert alert-info text-center">
-            {{$message}}
+            {{session("message")}}
         </div>
     @endif
 
@@ -104,12 +120,22 @@
     <!--Copyright-->
     <div class="footer-copyright footer-dark py-1">
       © 2021 Copyright:
-      <strong>The Last Developer</strong>
+      <strong >The Last Developer</strong>
     </div>
     <!--/.Copyright-->
 
   </footer>
   <!--/.Footer-->
+  <script>
+    let el = document.getElementById("message");
+    axios.get("/api/test").then(response=>{
+      // let posts = response;
+      let posts = response.data.posts;
+      let firstPost = posts[0];
+
+      el.innerHTML = firstPost.body;
+    })
+  </script>
 </body>
 
 </html>

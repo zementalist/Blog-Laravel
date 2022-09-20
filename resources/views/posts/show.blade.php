@@ -11,7 +11,7 @@
             <small id="article-meta">By
                 <strong>
                     <a href="/user">
-                        @Username
+                        {{$post->user->name}}
                     </a>
                 </strong>
                 , on{{$post->created_at}}
@@ -26,6 +26,7 @@
             <!--/.Featured Image-->
 
             <!-- CR(UD) Form -->
+            @if( auth()->user() && auth()->user()->id == $post->user_id)
             <div class="card my-4 mb-4">
                 <div class="row">
                     <div class="col-md-6">
@@ -41,6 +42,8 @@
                     </div>
                 </div>
             </div>
+            @endif
+
             <!--/ CR(UD) Form -->
             <!--Card-->
             <div class="card mb-4">
